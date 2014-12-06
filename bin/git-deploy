@@ -7,7 +7,7 @@ usage() {
 }
 
 version() {
-    printf "${RED}JaredCowan git plugin v0.1.0"
+    printf "${RED}JaredCowan Git Plugin v0.1.0"
 }
 
 main() {
