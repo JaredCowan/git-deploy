@@ -1,0 +1,24 @@
+#!/usr/bin/env sh
+
+# Junk file. Just testing.
+usage() {
+  echo "usage: git deploy hello [name]"
+}
+
+cmd_hello() {
+  if [ "$#" -lt 1 ]; then
+      say_hello World; exit 0
+  elif [ "$#" -eq 1 ]; then
+      if [ $1 == "help" ]; then
+          usage; exit 0
+      fi
+
+      say_hello $1; exit 0
+  fi
+
+  usage; exit 1
+}
+
+say_hello() {
+  echo "Hello ${1}"
+}
