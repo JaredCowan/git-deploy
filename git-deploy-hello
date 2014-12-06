@@ -12,10 +12,8 @@ cmd_hello() {
       if [ $1 == "help" ]; then
           usage; exit 0
       fi
-
       say_hello $1; exit 0
   fi
-
   usage; exit 1
 }
 
