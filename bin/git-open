@@ -24,7 +24,7 @@ version() {
 
 main() {
   if ! is_git_repo || is_git_dir; then
-    printf '\n%s\n' "${RED}${BOLD}fatal: Not a git repository (or any of the parent directories): .git${RESET}"
+    printf '\n%s\n' "${RED}${BOLD}fatal: Not a git repository (or any of the parent directories):${RESET}"
     usage; return 1
   fi
 
