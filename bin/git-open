@@ -1,0 +1,62 @@
+#!/usr/bin/env sh
+
+# Git-Open CLI -> Add on to Git-Deploy CLI
+# Repository: https://github.com/JaredCowan/git-deploy
+ 
+source "color"
+
+usage() {
+  local hdr=${WHITE}${BOLD}
+  local rst=${RESET}
+  printf '\n%s' "${hdr}NAME:${rst}"
+  printf '\n\t%s' "open -- open url of project on Github.com"
+  printf '\n%s' "${hdr}USAGE:${rst}"
+  printf '\n\t%s' "git open [-h | --help][-v | --version]"
+  printf '\n\t%s' "While in project directory run 'git open' to open the projects Github page."
+  printf '\n%s' "${hdr}EXAMPLE:${rst}"
+  printf '\n\t%s' "Running 'git open' in a Github project folder" 
+  printf '\n\t%s\n' "would open your browser and take you to your project on Github.com"
+}
+
+version() {
+  printf '\n%s\n' "${RED}Git Open Plugin v0.0.0${RESET}"
+}
+
+main() {
+  if ! is_git_repo || is_git_dir; then
+    printf '\n%s\n' "${RED}${BOLD}fatal: Not a git repository (or any of the parent directories): .git${RESET}"
+    usage; return 1
+  fi
+
+  local subcommand="$1"; shift
+
+  case $subcommand in
+    "-h"|"--help")
+      usage; exit 0
+      ;;
+    "-v"|"--version")
+      version; exit 0
+      ;;
+  esac
+
+  git_repo_url=$(find_repo_url)
+
+  open "$git_repo_url"
+}
+
+is_git_repo() {
+  $(git rev-parse --is-inside-work-tree &> /dev/null)
+}
+
+is_git_dir() {
+  $(git rev-parse --is-inside-git-dir 2> /dev/null)
+}
+
+find_repo_url() {
+  local temp_url
+  temp_url=$(git config --get remote.origin.url)
+  temp_url="https://github.com/$(echo $temp_url | cut -d':' -f2)"
+  printf $temp_url
+}
+
+main "$@"
