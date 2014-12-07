@@ -1,5 +1,8 @@
 #!/usr/bin/env sh
 
+# Git-Deploy -> Subcommand
+# Repository: https://github.com/JaredCowan/git-deploy
+
 # Junk file. Just testing.
 usage() {
   echo "usage: git deploy hello [name]"
