@@ -1,0 +1,24 @@
+#!/usr/bin/env sh
+
+# Git-Open -> Add on to Git-Deploy CLI
+# Repository: https://github.com/JaredCowan/git-deploy
+
+
+usage() {
+  echo "usage: git open issue [ opens an issue for branch/project."
+}
+
+cmd_issue() {
+echo "$(tput setaf 1)
+   .~~.   .~~.    
+  '. \ ' ' / .'   We have an issue
+   .~ .~~~..~.    
+  : .~.'~'.~. :   
+ ~ (   ) (   ) ~  
+( : '~'.~.'~' : ) 
+ ~ .~ (   ) ~. ~  
+  (  : '~' :  )   
+   '~ .~~~. ~'    that needs to post to Github quick and easy
+       '~'
+$(tput sgr0)"
+}

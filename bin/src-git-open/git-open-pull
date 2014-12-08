@@ -30,7 +30,7 @@ ${WHITE}${BOLD}EXAMPLE:${RESET}
 
     ${RED}\$${RESET} ${YELLOW}git open pull <branch-one> <branch-one>${RESET}
     This will create a pull request to merge into its self.
-    
+
 USAGEDOC
 }
 
@@ -96,7 +96,6 @@ SAMEBRANCH
   from_user=$(echo $origin | sed -e 's/.*[\/:]\([^/]*\)\/[^/]*$/\1/')
   repo=$(basename `git rev-parse --show-toplevel`)
 
-  # echo $(git config --get user.name)
   open "https://github.com/$to_user/$repo/pull/new/$to_user:$to_branch...$from_user:$from_branch"
 
 }
