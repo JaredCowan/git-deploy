@@ -5,20 +5,45 @@
 
 
 usage() {
-  echo "usage: git open issue [ opens an issue for branch/project."
+  cat <<-USAGEDOC 
+
+${WHITE}${BOLD}USAGE:${RESET}
+    ${RED}git open issue:${RESET} [ -v | --version ] [ -h | --help ]
+
+${WHITE}${BOLD}EXAMPLE:${RESET}
+    ${RED}\$${RESET} ${YELLOW}git open issue${RESET}
+    This will open a new Github issue of the poject in your browser.
+
+USAGEDOC
 }
 
 cmd_issue() {
-echo "$(tput setaf 1)
-   .~~.   .~~.    
-  '. \ ' ' / .'   We have an issue
-   .~ .~~~..~.    
-  : .~.'~'.~. :   
- ~ (   ) (   ) ~  
-( : '~'.~.'~' : ) 
- ~ .~ (   ) ~. ~  
-  (  : '~' :  )   
-   '~ .~~~. ~'    that needs to post to Github quick and easy
-       '~'
-$(tput sgr0)"
+  local user upstream origin repo
+  
+  case $1 in
+    "-h"|"--help")
+      usage; exit 1
+      ;;
+    "-v"|"--version")
+      version; exit 1
+      ;;
+  esac
+  
+  # Throw error if case statement failed and argument exist
+  if [ ! -z $1 ]; then
+    usage; exit 1
+  fi
+
+  # Find the upstream branch info, otherwise Origin info will be used
+  upstream=$(git config --get remote.upstream.url)
+  origin=$(git config --get remote.origin.url)
+  if [ -z $upstream ]; then
+    upstream=$origin
+  fi
+  
+  # Find Github username
+  user=$(echo $upstream | sed -e 's/.*[\/:]\([^/]*\)\/[^/]*$/\1/')
+  repo=$(basename `git rev-parse --show-toplevel`)
+
+  open "https://github.com/$user/$repo/issues/new/"
 }
