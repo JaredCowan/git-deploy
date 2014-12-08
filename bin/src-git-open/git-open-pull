@@ -12,6 +12,25 @@ ${WHITE}${BOLD}USAGE:${RESET}
     [-m | master ] <args [ <base branch> <from branch>  ] >
 
 ${WHITE}${BOLD}EXAMPLE:${RESET}
+    ${RED}\$${RESET} ${YELLOW}git open${RESET}
+    This will open the Github url of the poject in your browser.
+
+    ${RED}\$${RESET} ${YELLOW}git open pull${RESET}
+    This will create a pull request for the current branch you're on (Compare Branch)
+    for mergining into Master Branch (Base Branch). It's always best to call this basic
+    function from the branch you're working on to merge into master.
+
+    ${RED}\$${RESET} ${YELLOW}git open pull <new-branch>${RESET}
+    This will create a pull request for the current branch you're on (Compare Branch)
+    for mergining into <new-branch> (Base Branch).
+
+    ${RED}\$${RESET} ${YELLOW}git open pull <branch-one> <branch-two>${RESET}
+    This will create a pull request for <branch-two> (Compare Branch)
+    to merge into <branch-one> (Base Branch). You can call this function from any branch.
+
+    ${RED}\$${RESET} ${YELLOW}git open pull <branch-one> <branch-one>${RESET}
+    This will create a pull request to merge into its self.
+    
 USAGEDOC
 }
 
