@@ -97,5 +97,4 @@ SAMEBRANCH
   repo=$(basename `git rev-parse --show-toplevel`)
 
   open "https://github.com/$to_user/$repo/pull/new/$to_user:$to_branch...$from_user:$from_branch"
-
 }
