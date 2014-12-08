@@ -1,0 +1,83 @@
+#!/usr/bin/env sh
+
+# Git-Open CLI -> Add on to Git-Deploy CLI
+# Repository: https://github.com/JaredCowan/git-deploy
+# Thanks @devongovett | https://github.com/devongovett
+
+usage() {
+  cat <<-USAGEDOC 
+
+${WHITE}${BOLD}USAGE:${RESET}
+    ${RED}git open pull:${RESET} <optional arguments> - [ -v | --version ] [ -h | --help ]
+    [-m | master ] <args [ <base branch> <from branch>  ] >
+
+${WHITE}${BOLD}EXAMPLE:${RESET}
+USAGEDOC
+}
+
+__find_from_branch() {
+  find_from_branch=$(git rev-parse --abbrev-ref HEAD)
+  printf $find_from_branch
+}
+
+cmd_pull() {
+  local to_branch from_branch to_user from_user up_stream origin repo
+
+  if [ ! -z $1 ]; then
+    # Set Base to master. (Same as just calling `git open pull` with no arguments.)
+    case $1 in
+      "-h"|"--help")
+        usage; exit 1
+        ;;
+      "-v"|"--version")
+        version; exit 1
+        ;;
+      "-m"|"master")
+        to_branch="master"
+        ;;
+    esac
+    # Set Base to first arg if still undefined
+    if [ -z $to_branch ]; then
+      to_branch=$1
+    fi
+    # If no arg is given. Just set Base as Master
+    else
+      to_branch="master"
+  fi
+
+  # Check if arg for Compare was given. Otherwise set to head(current branch)
+  if [ ! -z $2 ]; then
+    from_branch=$2
+  else
+    from_branch=$(__find_from_branch)
+  fi
+
+  # Warn if both branches have the same name
+  if [ "$from_branch" == "$to_branch" ]; then
+    cat <<-SAMEBRANCH
+${YELLOW}${BOLD}Warning:${RESET}
+  ${ORANGE}You are attempting to create a new pull request for the same branches. 
+  There might not be anything to compare.${RESET}
+SAMEBRANCH
+    read -p "${RED}Do you want to continue? [y/n] " -n 1 -r; echo "${RESET}"
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+      # If anything other than [Y/y] show `usage` and exit
+      usage; exit 1 # Create a syntax function to give example
+    fi
+  fi
+
+  # Try the upstream branch if possible, otherwise Origin will do
+  upstream_path=$(git config --get remote.upstream.url)
+  origin=$(git config --get remote.origin.url)
+  if [ -z $upstream ]; then
+    upstream=$origin
+  fi
+  
+  to_user=$(echo $upstream | sed -e 's/.*[\/:]\([^/]*\)\/[^/]*$/\1/')
+  from_user=$(echo $origin | sed -e 's/.*[\/:]\([^/]*\)\/[^/]*$/\1/')
+  repo=$(basename `git rev-parse --show-toplevel`)
+
+  # echo $(git config --get user.name)
+  open "https://github.com/$to_user/$repo/pull/new/$to_user:$to_branch...$from_user:$from_branch"
+
+}

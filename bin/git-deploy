@@ -3,7 +3,8 @@
 # Git-Deploy CLI
 # Repository: https://github.com/JaredCowan/git-deploy
 
-source "color"
+# source color
+source ${BASH_SOURCE[0]/%git-deploy/resources/color}
 
 usage() {
   echo "usage: git deploy <subcommand>"
@@ -12,37 +13,38 @@ usage() {
 }
 
 version() {
-    printf "${RED}Git Deploy Plugin v0.1.0\n"
+  printf "${RED}Git Deploy Plugin v0.1.0\n"
 }
 
 main() {
     if [ "$#" -lt 1 ]; then
-        usage; exit 1
+      usage; exit 1
     fi
 
     local subcommand="$1"; shift
 
     case $subcommand in
-        "-h"|"--help")
-            usage; exit 0
-            ;;
-        "-v"|"--version")
-            version; exit 0
-            ;;
+      "-h"|"--help")
+        usage; exit 0
+        ;;
+      "-v"|"--version")
+        version; exit 0
+        ;;
     esac
 
     local workingdir=$(dirname "$(echo "$0" | sed -e 's,\\,/,g')")
-    if [ ! -e "$workingdir/git-deploy-$subcommand" ]; then
-        usage; exit 1
+
+    if [ ! -e "$workingdir/src-git-deploy/git-deploy-$subcommand" ]; then
+      usage; exit 1
     fi
 
-    source "$workingdir/git-deploy-$subcommand"
+    source ${BASH_SOURCE[0]/%git-deploy/src-git-deploy/git-deploy-$subcommand}
 
     if [ ! "cmd_$subcommand" ]; then
-        usage; exit 1
+      usage; exit 1
     fi
 
-    cmd_$subcommand "$@"
+  cmd_$subcommand "$@"
 }
 
 main "$@"

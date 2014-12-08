@@ -1,9 +1,9 @@
 #!/usr/bin/env sh
 
-# Git-Open CLI -> Add on to Git-Deploy CLI
+# Git-Open CLI
 # Repository: https://github.com/JaredCowan/git-deploy
  
-source "color"
+source ${BASH_SOURCE[0]/%git-open/resources/color}
 
 usage() {
   local hdr=${WHITE}${BOLD}
@@ -19,15 +19,11 @@ usage() {
 }
 
 version() {
-  printf '\n%s\n' "${RED}Git Open Plugin v0.0.0${RESET}"
+  printf '%s\n' "${RED}Git Open Plugin v0.0.0${RESET}"
 }
 
 main() {
-  if ! is_git_repo || is_git_dir; then
-    printf '\n%s\n' "${RED}${BOLD}fatal: Not a git repository (or any of the parent directories):${RESET}"
-    usage; return 1
-  fi
-
+  local workingdir=$(dirname "$(echo "$0" | sed -e 's,\\,/,g')")
   local subcommand="$1"; shift
 
   case $subcommand in
@@ -39,9 +35,23 @@ main() {
       ;;
   esac
 
-  git_repo_url=$(find_repo_url)
+  if ! is_git_repo || is_git_dir; then
+    printf '\n%s\n' "${RED}${BOLD}fatal: Not a git repository (or any of the parent directories):${RESET}"
+    usage; exit 1
+  elif [ ${#subcommand} -lt 1 ]; then
+    git_repo_url=$(find_repo_url)
+    open $git_repo_url; exit 1
+  elif [ ! -e "$workingdir/src-git-open/git-open-$subcommand" ]; then
+    usage; exit 1
+  fi
 
-  open "$git_repo_url"
+  source ${BASH_SOURCE[0]/%git-open/src-git-open/git-open-$subcommand}
+
+  if [ ! "cmd_$subcommand" ]; then
+      usage; exit 1
+  fi
+
+  cmd_$subcommand "$@"
 }
 
 is_git_repo() {
