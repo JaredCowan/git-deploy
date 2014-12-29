@@ -41,11 +41,21 @@ apiUrlBuilder() {
 
   statusCode=$(curl -s -o /dev/null --silent --head --write-out '%{http_code}\n' $gitRepoUrl?access_token=$token)
   date=`date`
-  echo $statusCode
 
   case $statusCode in
     "200")
-      echo "Success 200! We're fuckin' in man!"; exit 0
+      echo "Success 200! We're fuckin' in man!"
+      $(echo git init)
+      if [ ! -e $(pwd)/.git ];then
+        echo "WTF. Do you already have a .git repo here. FAIL: init .git"; exit 0
+      else
+        echo "fuck yes. Our new git repo has fuckin' spawned"
+      fi
+      printf '\n%s\n\n' "Adding your remote origin url"
+      $(git remote add origin $gitOriginUrl)
+      echo "Your remote origin url is:" $(git config --get remote.origin.url)
+      $(git config --add alias.virgin 'push -u origin master')
+      printf '\n%s\n\n' "When you're ready, type 'git virgin' to send this shit to Github. After you commit of course."
       ;;
     "400")
       echo "error! Bad Request 400"; exit 0
@@ -61,11 +71,4 @@ apiUrlBuilder() {
     ;;
   esac
 
-  # if [ ! $statusCode -ne "200" ]; then
-  #   echo "status check failed at $date"
-  #   #You can add further actions here
-  # fi
-
-  
-  # $(echo git init)
 }
