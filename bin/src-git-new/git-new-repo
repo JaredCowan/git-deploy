@@ -1,0 +1,70 @@
+#!/usr/bin/env sh
+
+# Git-New
+# Repository: https://github.com/JaredCowan/git-deploy
+
+usage() {
+  echo "usage: git deploy hello [name]"
+}
+
+createNewRepo() {
+
+  if [ "$#" -lt 1 ]; then
+    echo $@; exit 0
+  fi
+
+  if [ ! -e "$HOME/.secrets" ]; then
+    echo "make a file doesn't exist error"; exit 0
+  elif [ ! -e "$HOME/.gitconfig" ]; then
+    echo "make a file doesn't exist error"; exit 0
+  fi
+
+  local gitUserName gitAuthToken gitNewRepoName gitOriginUrl token
+
+  gitUserName=$(git config --get user.name)
+  gitAuthToken=$(secret githubApiAuthToken)
+  gitNewRepoName=$(echo "$@" | sed 's/ /-/g')
+  token=$(secret githubApiPlainAuthToken)
+  gitOriginUrl=git@github.com:$gitUserName/$gitNewRepoName.git
+
+  apiUrlBuilder $gitUserName $gitAuthToken $gitNewRepoName $gitOriginUrl $token
+}
+
+apiUrlBuilder() {
+  local statusCode date
+  gitRepoUrl="https://api.github.com/repos/$gitUserName/$gitNewRepoName"
+  repo="{\"name\":\"$gitNewRepoName\"}"
+  api="curl -g -u JaredCowan -X POST https://api.github.com/user/repos -d $repo"
+  # echo $(secret githubApiAuthToken)
+  $api
+  echo $api
+  statusCode=$(curl -s -o /dev/null --silent --head --write-out '%{http_code}\n' $gitRepoUrl?access_token=$token)
+  date=`date`
+  echo $statusCode
+
+  case $statusCode in
+    "200")
+      echo "Success 200! We're fuckin' in man!"; exit 0
+      ;;
+    "400")
+      echo "error! Bad Request 400"; exit 0
+      ;;
+    "401")
+      echo "error! Unauthorized 401"; exit 0
+      ;;
+    "404")
+      echo "error! 404"; exit 0
+      ;;
+    *)
+      echo "Got some kind of fuckin' error"; exit 0
+    ;;
+  esac
+
+  # if [ ! $statusCode -ne "200" ]; then
+  #   echo "status check failed at $date"
+  #   #You can add further actions here
+  # fi
+
+  
+  # $(echo git init)
+}

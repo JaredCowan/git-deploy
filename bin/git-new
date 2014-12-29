@@ -1,0 +1,50 @@
+#!/usr/bin/env sh
+
+# Git-Deploy CLI
+# Repository: https://github.com/JaredCowan/git-deploy
+
+# source color
+source ${BASH_SOURCE[0]/%git-new/resources/color}
+source ${BASH_SOURCE[0]/%git-new/resources/functions}
+
+usage() {
+  echo "usage: git new create and init a repo from terminal via Github API"
+  echo $(secret githubApiAuthToken)
+  echo $(git config --get user.name)
+}
+
+version() {
+  printf "${RED}Git Deploy Plugin v0.1.0\n"
+}
+
+main() {
+
+  local workingdir=$(dirname "$(echo "$0" | sed -e 's,\\,/,g')")
+  local subcommand="$@"
+
+  if [ $# -lt 1 ]; then
+    usage; exit 1
+  fi
+
+  case $subcommand in
+    "-h"|"-help")
+      usage; exit 0
+      ;;
+    "-v"|"-version")
+      version; exit 0
+      ;;
+  esac
+
+
+  if is_git_repo || is_git_dir; then
+    printf '\n%s\n' "${RED}${BOLD}fatal: This is already a git repository.${RESET}"
+    echo $(find_repo_url)
+    usage; exit 1
+  fi
+
+  source ${BASH_SOURCE[0]/%git-new/src-git-new/git-new-repo}
+
+  createNewRepo "$subcommand"
+}
+
+main "$@"

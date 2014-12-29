@@ -1,0 +1,40 @@
+# Since all my stuff is public. A little function to read data from a non-shared file.
+# Create a file at root ~ called .secret
+## Then in that file. create a variable (one per line) test="Hello World!"
+## Get the data by calling $(secret test) -returns-> "Hello World!"
+
+secret() {
+  # File to read from
+  local file=~/.secrets
+
+  # Assign parameter passed
+  local argv=$1
+
+  # We can read file based on line number passed.
+  # local readFile=$(sed -n $1p $file)
+
+  # Read file based on the line starting with the word passed as a parameter
+  local readFile=$(grep ^$argv $file)
+  # Perform regex to return only the value of the variable
+  ## Example: Given that our file has a variable called email=example@example.com
+  ## from a function you could call $(secret email) and it would return example@example.com
+  local fileRead=${readFile#*=}
+
+  # Return the data
+  echo $fileRead
+}
+
+is_git_repo() {
+  $(git rev-parse --is-inside-work-tree &> /dev/null)
+}
+
+is_git_dir() {
+  $(git rev-parse --is-inside-git-dir 2> /dev/null)
+}
+
+find_repo_url() {
+  local temp_url
+  temp_url=$(git config --get remote.origin.url)
+  temp_url="https://github.com/$(echo $temp_url | cut -d':' -f2)"
+  printf $temp_url
+}
