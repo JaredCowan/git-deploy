@@ -4,7 +4,8 @@
 # Repository: https://github.com/JaredCowan/git-deploy
 
 usage() {
-  echo "usage: git deploy hello [name]"
+  echo "usage: 'git new <repo name>' Spaces will be joined by hyphens '-'"
+  echo "Create a new github repo from terminal"
 }
 
 createNewRepo() {
