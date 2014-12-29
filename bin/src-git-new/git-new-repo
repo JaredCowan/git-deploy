@@ -22,6 +22,7 @@ createNewRepo() {
   local gitUserName gitAuthToken gitNewRepoName gitOriginUrl token
 
   gitUserName=$(git config --get user.name)
+  gitPassword=$(secret gitPassword)
   gitAuthToken=$(secret githubApiAuthToken)
   gitNewRepoName=$(echo "$@" | sed 's/ /-/g')
   token=$(secret githubApiPlainAuthToken)
@@ -34,10 +35,10 @@ apiUrlBuilder() {
   local statusCode date
   gitRepoUrl="https://api.github.com/repos/$gitUserName/$gitNewRepoName"
   repo="{\"name\":\"$gitNewRepoName\"}"
-  api="curl -g -u JaredCowan -X POST https://api.github.com/user/repos -d $repo"
-  # echo $(secret githubApiAuthToken)
-  $api
-  echo $api
+  api="-g -u $gitUserName:$gitPassword -X POST https://api.github.com/user/repos -d $repo"
+
+  curl $api
+
   statusCode=$(curl -s -o /dev/null --silent --head --write-out '%{http_code}\n' $gitRepoUrl?access_token=$token)
   date=`date`
   echo $statusCode
