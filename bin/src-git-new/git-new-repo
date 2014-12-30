@@ -44,7 +44,7 @@ apiUrlBuilder() {
   # To use a oAuth token in the header to authenticate yourself. Uncomment this line(and comment out the 1st 'api' variable above.) 
   # See this link (https://github.com/settings/tokens/new) to create a personal access token.
   # Then just copy the token to the 'gitAuthToken' variable in your secret file.
-  # Your variable should look like this. githubApiAuthToken=Authorization: token YOUR-TOKEN-HERE
+  # Your variable should look like this. githubApiAuthToken=Authorization: token 845793487987983475983487FGDFGDFV
   api=(-H "$gitAuthToken" -X POST https://api.github.com/user/repos -d "$repoData")
 
   # Github API call
