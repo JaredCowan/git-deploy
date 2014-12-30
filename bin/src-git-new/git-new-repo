@@ -35,10 +35,12 @@ createNewRepo() {
 apiUrlBuilder() {
   local statusCode date
   gitRepoUrl="https://api.github.com/repos/$gitUserName/$gitNewRepoName"
-  repo="{\"name\":\"$gitNewRepoName\"}"
-  api="-g -u $gitUserName:$gitPassword -X POST https://api.github.com/user/repos -d $repo"
+  # repo="{\"name\":\"$gitNewRepoName\"}"
+  repo='{"name":"'"$gitNewRepoName"'"}'
+  # api="-g -u $gitUserName:$gitPassword -X POST https://api.github.com/user/repos -d $repo"
+  api=(-H "$gitAuthToken" -X POST https://api.github.com/user/repos -d "$repo")
 
-  curl $api
+  curl "${api[@]}"
 
   statusCode=$(curl -s -o /dev/null --silent --head --write-out '%{http_code}\n' $gitRepoUrl?access_token=$token)
   date=`date`
@@ -48,7 +50,7 @@ apiUrlBuilder() {
       echo "Success 200! We're fuckin' in man!"
       $(echo git init)
       if [ ! -e $(pwd)/.git ];then
-        echo "WTF. Do you already have a .git repo here. FAIL: init .git"; exit 0
+        echo "WTF. Do you already have a .git repo here. FAILED: init .git"; exit 0
       else
         echo "fuck yes. Our new git repo has fuckin' spawned"
       fi
