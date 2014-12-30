@@ -13,9 +13,9 @@ Open the file and paste this in:
 First create a [Github Personal Access Token Here](https://github.com/settings/tokens/new): COPY THE CODE!
 
 > email=YOUR-GITHUB-EMAIL
-githubApiAuthToken=Authorization: token PASTE-YOUR-TOKEN-HERE
-githubApiPlainAuthToken=PASTE-YOUR-TOKEN-HERE
-gitPassword=YOUR-GITHUB-PASSWORD
+>githubApiAuthToken=Authorization: token PASTE-YOUR-TOKEN-HERE
+>githubApiPlainAuthToken=PASTE-YOUR-TOKEN-HERE
+>gitPassword=YOUR-GITHUB-PASSWORD
 
 ---
 # Syntax
