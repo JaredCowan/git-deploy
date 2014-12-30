@@ -33,44 +33,54 @@ createNewRepo() {
 }
 
 apiUrlBuilder() {
-  local statusCode date
+  local statusCode date api gitRepoUrl
   gitRepoUrl="https://api.github.com/repos/$gitUserName/$gitNewRepoName"
-  # repo="{\"name\":\"$gitNewRepoName\"}"
-  repo='{"name":"'"$gitNewRepoName"'"}'
-  # api="-g -u $gitUserName:$gitPassword -X POST https://api.github.com/user/repos -d $repo"
-  api=(-H "$gitAuthToken" -X POST https://api.github.com/user/repos -d "$repo")
+  # Name for your new repo
+  repoData='{"name":"'"$gitNewRepoName"'"}'
 
-  curl "${api[@]}"
+  # To use a username and password to authenticate yourself. Uncomment this line(and comment out the 2nd 'api' variable below.) 
+  # api=(-u "$gitUserName:$gitPassword" -X POST https://api.github.com/user/repos -d "$repoData")
 
+  # To use a oAuth token in the header to authenticate yourself. Uncomment this line(and comment out the 1st 'api' variable above.) 
+  # See this link (https://github.com/settings/tokens/new) to create a personal access token.
+  # Then just copy the token to the 'gitAuthToken' variable in your secret file.
+  # Your variable should look like this. githubApiAuthToken=Authorization: token YOUR-TOKEN-HERE
+  api=(-H "$gitAuthToken" -X POST https://api.github.com/user/repos -d "$repoData")
+
+  # Github API call
+  curl -s -o /dev/null "${api[@]}"
+
+  # Check for HTTP success on creation of remote Github repo
   statusCode=$(curl -s -o /dev/null --silent --head --write-out '%{http_code}\n' $gitRepoUrl?access_token=$token)
   date=`date`
 
   case $statusCode in
     "200")
-      echo "Success 200! We're fuckin' in man!"
-      $(echo git init)
+      printf '\n%s\n\n' "${GREEN}Successfully created repo ${RED}'$gitNewRepoName'${RESET}${GREEN} on $date. ${RESET}"
+      $(echo git init -q)
       if [ ! -e $(pwd)/.git ];then
-        echo "WTF. Do you already have a .git repo here. FAILED: init .git"; exit 0
+        printf '\n%s' "WTF. Do you already have a .git repo here. FAILED: init .git"; exit 0
       else
-        echo "fuck yes. Our new git repo has fuckin' spawned"
+        printf '%s\n' "${GREEN}Created new Git Repository. You're now on${RESET}${RED} branch $(get_git_branch)${RESET}"
+        printf '\n%s\n' "${GREEN}fuck yes. Our new git repo has fuckin' spawned"
       fi
       printf '\n%s\n\n' "Adding your remote origin url"
       $(git remote add origin $gitOriginUrl)
-      echo "Your remote origin url is:" $(git config --get remote.origin.url)
+      echo "Your remote origin url is:${RESET}${PURPLE} $(git config --get remote.origin.url)"
       $(git config --add alias.virgin 'push -u origin master')
-      printf '\n%s\n\n' "When you're ready, type 'git virgin' to send this shit to Github. After you commit of course."
+      printf '\n%s\n\n' "${RESET}${BLUE}When you're ready, type${RESET}${RED} 'git virgin'${RESET}${BLUE} to send this shit to Github. After you commit of course.${RESET}"
       ;;
     "400")
-      echo "error! Bad Request 400"; exit 0
+      echo "${RED}error! Bad Request 400${RESET}"; exit 0
       ;;
     "401")
-      echo "error! Unauthorized 401"; exit 0
+      echo "${RED}error! Unauthorized 401${RESET}"; exit 0
       ;;
     "404")
-      echo "error! 404"; exit 0
+      echo "${RED}error! 404${RESET}"; exit 0
       ;;
     *)
-      echo "Got some kind of fuckin' error"; exit 0
+      echo "${RED}Got some kind of fuckin' error${RESET}"; exit 0
     ;;
   esac
 

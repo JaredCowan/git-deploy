@@ -20,7 +20,6 @@ if [[ $COLORTERM = gnome-* && $TERM = xterm ]] && infocmp gnome-256color >/dev/n
     CYAN=$(tput setaf 6)
     WHITE=$(tput setaf 7)
     ORANGE=$(tput setaf 172)
-    GREEN=$(tput setaf 190)
     PURPLE=$(tput setaf 141)
   else
     MAGENTA=$(tput setaf 5)

@@ -1,9 +1,8 @@
 #!/usr/bin/env sh
 
-# Git-Deploy CLI
+# Git-New CLI
 # Repository: https://github.com/JaredCowan/git-deploy
 
-# source color
 source ${BASH_SOURCE[0]/%git-new/resources/color}
 source ${BASH_SOURCE[0]/%git-new/resources/functions}
 
@@ -29,22 +28,31 @@ main() {
   case $subcommand in
     "-h"|"-help")
       usage; exit 0
-      ;;
+    ;;
     "-v"|"-version")
       version; exit 0
-      ;;
+    ;;
   esac
 
-
+  # Check for local Git repo
   if is_git_repo || is_git_dir; then
     printf '\n%s\n' "${RED}${BOLD}fatal: This is already a git repository.${RESET}"
     echo $(find_repo_url)
     usage; exit 1
+  elif checkUniqueRepoName $@; then
+    # Check if repo exist already on Github. Throws error on 200 response code
+    case $statusCode in
+      "200")
+        $statusCode
+        exit 1
+      ;;
+      *)
+        source ${BASH_SOURCE[0]/%git-new/src-git-new/git-new-repo}
+        createNewRepo "$subcommand"
+      ;;
+
+    esac
   fi
-
-  source ${BASH_SOURCE[0]/%git-new/src-git-new/git-new-repo}
-
-  createNewRepo "$subcommand"
 }
 
 main "$@"

@@ -32,9 +32,37 @@ is_git_dir() {
   $(git rev-parse --is-inside-git-dir 2> /dev/null)
 }
 
+get_git_branch() {
+  local branch_name
+    # Get the short symbolic ref
+    branch_name=$(git symbolic-ref --quiet --short HEAD 2> /dev/null) ||
+    # If HEAD isn't a symbolic ref, get the short SHA
+    branch_name=$(git rev-parse --short HEAD 2> /dev/null) ||
+    # Otherwise, just give up
+    branch_name="(unknown)"
+    printf $branch_name
+}
+
 find_repo_url() {
   local temp_url
   temp_url=$(git config --get remote.origin.url)
   temp_url="https://github.com/$(echo $temp_url | cut -d':' -f2)"
   printf $temp_url
+}
+
+checkUniqueRepoName() {
+  # Check first to see if current user already has a repo on Github with the same name as given argv
+  local userAndRepoName=$(git config --get user.name)'/'$(echo $@ | sed 's/ /-/g')
+  local apiUrlPath="https://api.github.com/repos/$userAndRepoName"
+  local repoUrl="https://github.com/$userAndRepoName"
+  local statusCode=$(curl -s -o /dev/null --silent --head --write-out '%{http_code}\n' $apiUrlPath?access_token=$(secret githubApiPlainAuthToken))
+
+  case $statusCode in
+    "200")
+      echo "${RED}ERROR:"
+      printf '\t%s\n' "This repo already exist"
+      printf '\t%s\n' "${RESET}${BLUE}$repoUrl${RESET}"
+      exit 1
+      ;;
+  esac
 }
