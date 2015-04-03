@@ -1,0 +1,28 @@
+#!/usr/bin/env sh
+
+# Git-Deploy -> Subcommand
+# Repository: https://github.com/JaredCowan/git-deploy
+
+# Junk file. Just testing.
+usage() {
+  echo "usage: git deploy hello [name]"
+}
+
+cmd_remote() {
+  if [ "${1}" == "help" ]; then
+    usage; exit 0
+  elif [ $# -eq 0 ]; then
+    deploy_code $@; exit 0
+  else
+    usage; exit 0
+  fi
+}
+
+deploy_code() {
+  echo "${GREEN}Compiling...${RESET}"
+  $(rake assets:precompile)
+
+  echo "${GREEN}Commiting changes to Github...${RESET}"
+  commitmessage='"compiled assets"'
+  git d "${commitmessage}" && git p
+}
